@@ -1,5 +1,6 @@
 from tkinter import *
 
+from Parki_Narodowe_lib.model import User
 
 users: list = []
 
@@ -10,6 +11,7 @@ class User:
         self.goscie = goscie
         self.pojazdy = pojazdy
         self.park = park
+
 
 def show_users() -> None:
     listbox_lista_parkow.delete(0, END)
@@ -37,6 +39,7 @@ def show_user_details():
     label_park_szczegoly_parku_wartosc.config(text=park)
 
 
+
 def edit_user():
     i = listbox_lista_parkow.index(ACTIVE)
     pracownicy = users[i].pracownicy
@@ -58,7 +61,6 @@ def update_user(i):
     users[i].pojazdy = entry_pojazdy.get()
     users[i].park = entry_park.get()
 
-
     button_dodaj_uzytkownika.config(text="Dodaj uzytkownika", command=add_user)
     entry_pracownicy.delete(0, END)
     entry_goscie.delete(0, END)
@@ -75,9 +77,10 @@ def add_user():
     vehicles = entry_pojazdy.get()
     park = entry_park.get()
 
+    # print(employees, guests, vehicles, park)
     new_user = User(pracownicy=employees, goscie=guests, pojazdy=vehicles, park=park)
     users.append(new_user)
-
+    # print(users)
 
     entry_pracownicy.delete(0, END)
     entry_goscie.delete(0, END)
@@ -86,7 +89,6 @@ def add_user():
 
     entry_pracownicy.focus()
     show_users()
-
 
 root = Tk()
 
@@ -166,6 +168,7 @@ label_pojazdy_szczegoly_parku.grid(row=1, column=4, sticky=W)
 label_pojazdy_szczegoly_parku_wartosc.grid(row=1, column=5, sticky=W)
 label_park_szczegoly_parku.grid(row=1, column=6, sticky=W)
 label_park_szczegoly_parku_wartosc.grid(row=1, column=7, sticky=W)
+
 
 
 root.mainloop()
