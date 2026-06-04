@@ -1,17 +1,7 @@
 from tkinter import *
+import tkintermapview
 
-from Parki_Narodowe_lib.model import User
-
-users: list = []
-
-
-class User:
-    def __init__(self, pracownicy: str, goscie: str, pojazdy: str, park: str):
-        self.pracownicy = pracownicy
-        self.goscie = goscie
-        self.pojazdy = pojazdy
-        self.park = park
-
+from Parki_Narodowe_lib.model import User, users
 
 def show_users() -> None:
     listbox_lista_parkow.delete(0, END)
@@ -37,7 +27,8 @@ def show_user_details():
     label_goscie_szczegoly_parku_wartosc.config(text=goscie)
     label_pojazdy_szczegoly_parku_wartosc.config(text=pojazdy)
     label_park_szczegoly_parku_wartosc.config(text=park)
-
+    map_widget.set_position(users[i].coordinates[0], users[i].coordinates[1])
+    map_widget.set_zoom(12)
 
 
 def edit_user():
@@ -60,6 +51,9 @@ def update_user(i):
     users[i].goscie = entry_goscie.get()
     users[i].pojazdy = entry_pojazdy.get()
     users[i].park = entry_park.get()
+    users[i].coordinates = User.get_coordinates(users[i])
+    users[i].marker.delete()
+    users[i].marker = map_widget.set_marker(users[i].coordinates[0], users[i].coordinates[1], text=users[i].park)
 
     button_dodaj_uzytkownika.config(text="Dodaj uzytkownika", command=add_user)
     entry_pracownicy.delete(0, END)
@@ -77,10 +71,10 @@ def add_user():
     vehicles = entry_pojazdy.get()
     park = entry_park.get()
 
-    # print(employees, guests, vehicles, park)
     new_user = User(pracownicy=employees, goscie=guests, pojazdy=vehicles, park=park)
     users.append(new_user)
-    # print(users)
+
+    new_user.marker = map_widget.set_marker(new_user.coordinates[0], new_user.coordinates[1], text=new_user.park)
 
     entry_pracownicy.delete(0, END)
     entry_goscie.delete(0, END)
@@ -89,6 +83,7 @@ def add_user():
 
     entry_pracownicy.focus()
     show_users()
+
 
 root = Tk()
 
@@ -169,6 +164,11 @@ label_pojazdy_szczegoly_parku_wartosc.grid(row=1, column=5, sticky=W)
 label_park_szczegoly_parku.grid(row=1, column=6, sticky=W)
 label_park_szczegoly_parku_wartosc.grid(row=1, column=7, sticky=W)
 
+# ramka mapa
+map_widget = tkintermapview.TkinterMapView(ramka_mapa, width=1024, height=600, corner_radius=4)
+map_widget.set_zoom(6)
+map_widget.set_position(52.2, 21.0)
+map_widget.grid(row=0, column=0)
 
 
 root.mainloop()
