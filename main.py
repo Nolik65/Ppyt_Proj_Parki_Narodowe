@@ -1,6 +1,8 @@
 from tkinter import *
 import tkintermapview
+import sys
 
+from Parki_Narodowe_lib.password import login_window
 from Parki_Narodowe_lib.model import User, users
 
 def show_users() -> None:
@@ -83,6 +85,9 @@ def add_user():
 
     entry_pracownicy.focus()
     show_users()
+
+if not login_window():
+    sys.exit()
 
 
 root = Tk()
@@ -170,5 +175,19 @@ map_widget.set_zoom(6)
 map_widget.set_position(52.2, 21.0)
 map_widget.grid(row=0, column=0)
 
+# def add_new_park(user):
+#     user.marker = map_widget.set_marker(
+#         user.coordinates[0],
+#         user.coordinates[0],
+#         text=user.park
+#     )
+#     users.append(user)
+
+
+#add_new_park(User(pracownicy="Jan Kowalski", goscie="Adam Nowak, Mateusz Kalisz", pojazdy="Toyota, Ford", park="Kampinoski_Park_Narodowy"))
+#add_new_park(User(pracownicy="Eryk Gawron, Oskar Wróbel", goscie="Daniel Błażewicz", pojazdy="Volkswagen, Skoda, Renault", park="Ojcowski_Park_Narodowy"))
+# add_new_park(User(pracownicy="Jakub Mazurek", goscie="Anna Marciniak", pojazdy="Kia", park="Tatrzański_Park_Narodowy"))
+
+show_users()
 
 root.mainloop()
