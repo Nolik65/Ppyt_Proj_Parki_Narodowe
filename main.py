@@ -175,6 +175,7 @@ map_widget.set_zoom(6)
 map_widget.set_position(52.2, 21.0)
 map_widget.grid(row=0, column=0)
 
+
 # def add_new_park(user):
 #     user.marker = map_widget.set_marker(
 #         user.coordinates[0],
