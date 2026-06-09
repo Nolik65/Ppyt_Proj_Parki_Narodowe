@@ -3,12 +3,20 @@ import tkintermapview
 import sys
 
 from Parki_Narodowe_lib.password import login_window
+from Parki_Narodowe_lib.lists_park import parks_data
 from Parki_Narodowe_lib.model import User, users
 
 def show_users() -> None:
     listbox_lista_parkow.delete(0, END)
+    listbox_lista_pracownikow.delete(0, END)
+    listbox_lista_gosci.delete(0, END)
+    listbox_lista_pojazdow.delete(0, END)
+
     for idx, user in enumerate(users):
         listbox_lista_parkow.insert(idx, user.park)
+        listbox_lista_pracownikow.insert(idx, user.pracownicy)
+        listbox_lista_gosci.insert(idx, user.goscie)
+        listbox_lista_pojazdow.insert(idx, user.pojazdy)
 
 
 def remove_user() -> None:
@@ -93,7 +101,7 @@ if not login_window():
 root = Tk()
 
 root.title("Parki narodowe")
-root.geometry("1024x760")
+root.geometry("1024x720")
 
 # FRAME
 ramka_lista_parkow = Frame(root)
@@ -107,15 +115,30 @@ ramka_szczegoly_parku.grid(row=1, column=0, columnspan=2, padx=50, pady=20)
 ramka_mapa.grid(row=2, column=0, columnspan=2)
 
 # RAMKA LISTA OBIEKTOW
-label_lista_parkow = Label(ramka_lista_parkow, text="Lista parków narodowych: ")
-listbox_lista_parkow = Listbox(ramka_lista_parkow)
+label_lista_parkow = Label(ramka_lista_parkow, text="Lista parków narodowych:")
+label_lista_pracownikow = Label(ramka_lista_parkow, text="Lista pracowników:")
+label_lista_gosci = Label(ramka_lista_parkow, text="Lista gości:")
+label_lista_pojazdow = Label(ramka_lista_parkow, text="Lista marek pojazdów:")
+
+listbox_lista_parkow = Listbox(ramka_lista_parkow, width=28)
+listbox_lista_pracownikow = Listbox(ramka_lista_parkow, width=22)
+listbox_lista_gosci = Listbox(ramka_lista_parkow, width=22)
+listbox_lista_pojazdow = Listbox(ramka_lista_parkow, width=22)
 
 button_pokaz_szczegoly_parku = Button(ramka_lista_parkow, text="Pokaż szczegóły parku", command=show_user_details)
-button_usun_obiekt = Button(ramka_lista_parkow, text="Usun", command=remove_user)
+button_usun_obiekt = Button(ramka_lista_parkow, text="Usuń", command=remove_user)
 button_edytuj_obiekt = Button(ramka_lista_parkow, text="Edytuj", command=edit_user)
 
 label_lista_parkow.grid(row=0, column=0)
+label_lista_pracownikow.grid(row=0, column=1)
+label_lista_gosci.grid(row=0, column=2)
+label_lista_pojazdow.grid(row=0, column=3)
+
 listbox_lista_parkow.grid(row=1, column=0)
+listbox_lista_pracownikow.grid(row=1, column=1)
+listbox_lista_gosci.grid(row=1, column=2)
+listbox_lista_pojazdow.grid(row=1, column=3)
+
 button_pokaz_szczegoly_parku.grid(row=2, column=0)
 button_usun_obiekt.grid(row=2, column=1)
 button_edytuj_obiekt.grid(row=2, column=2)
@@ -150,13 +173,13 @@ button_dodaj_uzytkownika.grid(row=5, column=0, columnspan=2)
 # SZCZEGOLY OBIEKTU
 
 label_szczegoly_parku = Label(ramka_szczegoly_parku, text="Szczegóły wybranego parku:")
-label_pracownicy_szczegoly_parku = Label(ramka_szczegoly_parku, text="Pracownicy: ")
+label_pracownicy_szczegoly_parku = Label(ramka_szczegoly_parku, text="Pracownicy: ", font=("Calibri", 11, "bold"))
 label_pracownicy_szczegoly_parku_wartosc = Label(ramka_szczegoly_parku, text="...")
-label_goscie_szczegoly_parku = Label(ramka_szczegoly_parku, text="Goście: ")
+label_goscie_szczegoly_parku = Label(ramka_szczegoly_parku, text="Goście: ", font=("Calibri", 11, "bold"))
 label_goscie_szczegoly_parku_wartosc = Label(ramka_szczegoly_parku, text="...")
-label_pojazdy_szczegoly_parku = Label(ramka_szczegoly_parku, text="Marki wjeżdżających samochodów gości: ")
+label_pojazdy_szczegoly_parku = Label(ramka_szczegoly_parku, text="Marki wjeżdżających samochodów gości: ", font=("Calibri", 11, "bold"))
 label_pojazdy_szczegoly_parku_wartosc = Label(ramka_szczegoly_parku, text="...")
-label_park_szczegoly_parku = Label(ramka_szczegoly_parku, text="Park: ")
+label_park_szczegoly_parku = Label(ramka_szczegoly_parku, text="Park: ", font=("Calibri", 11, "bold"))
 label_park_szczegoly_parku_wartosc = Label(ramka_szczegoly_parku, text="...")
 
 label_szczegoly_parku.grid(row=0, column=0, sticky=W)
@@ -175,19 +198,24 @@ map_widget.set_zoom(6)
 map_widget.set_position(52.2, 21.0)
 map_widget.grid(row=0, column=0)
 
+def add_user_object(user):
+    user.marker = map_widget.set_marker(
+        user.coordinates[0],
+        user.coordinates[1],
+        text=user.park
+    )
 
-# def add_new_park(user):
-#     user.marker = map_widget.set_marker(
-#         user.coordinates[0],
-#         user.coordinates[0],
-#         text=user.park
-#     )
-#     users.append(user)
+    users.append(user)
 
-
-#add_new_park(User(pracownicy="Jan Kowalski", goscie="Adam Nowak, Mateusz Kalisz", pojazdy="Toyota, Ford", park="Kampinoski_Park_Narodowy"))
-#add_new_park(User(pracownicy="Eryk Gawron, Oskar Wróbel", goscie="Daniel Błażewicz", pojazdy="Volkswagen, Skoda, Renault", park="Ojcowski_Park_Narodowy"))
-# add_new_park(User(pracownicy="Jakub Mazurek", goscie="Anna Marciniak", pojazdy="Kia", park="Tatrzański_Park_Narodowy"))
+for park_data in parks_data:
+    add_user_object(
+        User(
+            pracownicy=park_data["pracownicy"],
+            goscie=park_data["goscie"],
+            pojazdy=park_data["pojazdy"],
+            park=park_data["park"]
+        )
+    )
 
 show_users()
 

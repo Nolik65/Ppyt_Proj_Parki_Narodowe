@@ -31,7 +31,7 @@ def login_window() -> bool:
     label_haslo = Label(root_login, text="Hasło:")
 
     entry_login = Entry(root_login)
-    entry_haslo = Entry(root_login, show="+")
+    entry_haslo = Entry(root_login, show="*")
 
     button_zaloguj = Button(root_login, text="Zaloguj", command=sprawdz_logowanie)
 
