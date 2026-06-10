@@ -6,66 +6,141 @@ from Parki_Narodowe_lib.password import login_window
 from Parki_Narodowe_lib.lists_park import parks_data
 from Parki_Narodowe_lib.model import User, users
 
-def show_users() -> None:
+visible_users = []
+
+def show_users(data=None) -> None:
+    if data is None:
+        data = users
+
+    visible_users.clear()
+    visible_users.extend(data)
+
     listbox_lista_parkow.delete(0, END)
     listbox_lista_pracownikow.delete(0, END)
     listbox_lista_gosci.delete(0, END)
     listbox_lista_pojazdow.delete(0, END)
 
-    for idx, user in enumerate(users):
+    # for idx, user in enumerate(users):
+    #     listbox_lista_parkow.insert(idx, user.park)
+    #     listbox_lista_pracownikow.insert(idx, user.pracownicy)
+    #     listbox_lista_gosci.insert(idx, user.goscie)
+    #     listbox_lista_pojazdow.insert(idx, user.pojazdy)
+
+    for idx, user in enumerate(visible_users):
         listbox_lista_parkow.insert(idx, user.park)
         listbox_lista_pracownikow.insert(idx, user.pracownicy)
         listbox_lista_gosci.insert(idx, user.goscie)
         listbox_lista_pojazdow.insert(idx, user.pojazdy)
 
+def refresh_markers(data=None) -> None:
+    if data is None:
+        data = users
+
+    for user in users:
+        if user.marker is not None:
+            user.marker.delete()
+            user.marker = None
+
+    for user in data:
+        user.marker = map_widget.set_marker(
+            user.coordinates[0],
+            user.coordinates[1],
+            text=user.park
+        )
+def filter_parks(event=None) -> None:
+    text = entry_filtracja.get().strip().lower()
+
+    if text == "":
+        filtered = users
+    else:
+        filtered = [user for user in users if user.park.lower().startswith(text)]
+
+    show_users(filtered)
+    refresh_markers(filtered)
 
 def remove_user() -> None:
     i = listbox_lista_parkow.index(ACTIVE)
-    users[i].marker.delete()
-    users.pop(i)
-    show_users()
+    user = visible_users[i]
+
+    if user.marker is not None:
+        user.marker.delete()
+
+    users.remove(user)
+
+    filter_parks()
+
+    # users[i].marker.delete()
+    # users.pop(i)
+    # show_users()
 
 
 def show_user_details():
     i = listbox_lista_parkow.index(ACTIVE)
-    pracownicy = users[i].pracownicy
-    goscie = users[i].goscie
-    pojazdy = users[i].pojazdy
-    park = users[i].park
+    user = visible_users[i]
+    # pracownicy = users[i].pracownicy
+    # goscie = users[i].goscie
+    # pojazdy = users[i].pojazdy
+    # park = users[i].park
 
-    label_pracownicy_szczegoly_parku_wartosc.config(text=pracownicy)
-    label_goscie_szczegoly_parku_wartosc.config(text=goscie)
-    label_pojazdy_szczegoly_parku_wartosc.config(text=pojazdy)
-    label_park_szczegoly_parku_wartosc.config(text=park)
+    # label_pracownicy_szczegoly_parku_wartosc.config(text=pracownicy)
+    # label_goscie_szczegoly_parku_wartosc.config(text=goscie)
+    # label_pojazdy_szczegoly_parku_wartosc.config(text=pojazdy)
+    # label_park_szczegoly_parku_wartosc.config(text=park)
+
+    label_pracownicy_szczegoly_parku_wartosc.config(text=user.pracownicy)
+    label_goscie_szczegoly_parku_wartosc.config(text=user.goscie)
+    label_pojazdy_szczegoly_parku_wartosc.config(text=user.pojazdy)
+    label_park_szczegoly_parku_wartosc.config(text=user.park)
+
     map_widget.set_position(users[i].coordinates[0], users[i].coordinates[1])
     map_widget.set_zoom(12)
 
 
 def edit_user():
     i = listbox_lista_parkow.index(ACTIVE)
-    pracownicy = users[i].pracownicy
-    goscie = users[i].goscie
-    pojazdy = users[i].pojazdy
-    park = users[i].park
+    # pracownicy = users[i].pracownicy
+    # goscie = users[i].goscie
+    # pojazdy = users[i].pojazdy
+    # park = users[i].park
+    #
+    # entry_pracownicy.insert(0, pracownicy)
+    # entry_goscie.insert(0, goscie)
+    # entry_pojazdy.insert(0, pojazdy)
+    # entry_park.insert(0, park)
+    #
+    # button_dodaj_uzytkownika.config(text="Zapisz zmiany", command=lambda: update_user(i))
 
-    entry_pracownicy.insert(0, pracownicy)
-    entry_goscie.insert(0, goscie)
-    entry_pojazdy.insert(0, pojazdy)
-    entry_park.insert(0, park)
+    user = visible_users[i]
 
-    button_dodaj_uzytkownika.config(text="Zapisz zmiany", command=lambda: update_user(i))
+    entry_pracownicy.insert(0, user.pracownicy)
+    entry_goscie.insert(0, user.goscie)
+    entry_pojazdy.insert(0, user.pojazdy)
+    entry_park.insert(0, user.park)
 
+    button_dodaj_uzytkownika.config(text="Zapisz zmiany", command=lambda: update_user(user))
 
-def update_user(i):
-    users[i].pracownicy = entry_pracownicy.get()
-    users[i].goscie = entry_goscie.get()
-    users[i].pojazdy = entry_pojazdy.get()
-    users[i].park = entry_park.get()
-    users[i].coordinates = User.get_coordinates(users[i])
-    users[i].marker.delete()
-    users[i].marker = map_widget.set_marker(users[i].coordinates[0], users[i].coordinates[1], text=users[i].park)
+def update_user(user):
+    # users[i].pracownicy = entry_pracownicy.get()
+    # users[i].goscie = entry_goscie.get()
+    # users[i].pojazdy = entry_pojazdy.get()
+    # users[i].park = entry_park.get()
+    # users[i].coordinates = User.get_coordinates(users[i])
+    # users[i].marker.delete()
+    # users[i].marker = map_widget.set_marker(users[i].coordinates[0], users[i].coordinates[1], text=users[i].park)
+    #
+    # button_dodaj_uzytkownika.config(text="Dodaj użytkownika", command=add_user)
+    # entry_pracownicy.delete(0, END)
+    # entry_goscie.delete(0, END)
+    # entry_pojazdy.delete(0, END)
+    # entry_park.delete(0, END)
+    user.pracownicy = entry_pracownicy.get()
+    user.goscie = entry_goscie.get()
+    user.pojazdy = entry_pojazdy.get()
+    user.park = entry_park.get()
+    user.coordinates = User.get_coordinates(user)
 
-    button_dodaj_uzytkownika.config(text="Dodaj uzytkownika", command=add_user)
+    button_dodaj_uzytkownika.config(text="Dodaj użytkownika", command=add_user)
+
     entry_pracownicy.delete(0, END)
     entry_goscie.delete(0, END)
     entry_pojazdy.delete(0, END)
@@ -128,6 +203,9 @@ listbox_lista_pojazdow = Listbox(ramka_lista_parkow, width=22)
 button_pokaz_szczegoly_parku = Button(ramka_lista_parkow, text="Pokaż szczegóły parku", command=show_user_details)
 button_usun_obiekt = Button(ramka_lista_parkow, text="Usuń", command=remove_user)
 button_edytuj_obiekt = Button(ramka_lista_parkow, text="Edytuj", command=edit_user)
+label_filtracja = Label(ramka_lista_parkow, text="Filtracja:")
+entry_filtracja = Entry(ramka_lista_parkow)
+entry_filtracja.bind("<KeyRelease>", filter_parks)
 
 label_lista_parkow.grid(row=0, column=0)
 label_lista_pracownikow.grid(row=0, column=1)
@@ -142,6 +220,8 @@ listbox_lista_pojazdow.grid(row=1, column=3)
 button_pokaz_szczegoly_parku.grid(row=2, column=0)
 button_usun_obiekt.grid(row=2, column=1)
 button_edytuj_obiekt.grid(row=2, column=2)
+label_filtracja.grid(row=2, column=3, padx=(20, 5))
+entry_filtracja.grid(row=2, column=4)
 
 # RAMKA FORMULARZ
 
