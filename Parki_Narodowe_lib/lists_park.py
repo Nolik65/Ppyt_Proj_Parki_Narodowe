@@ -23,8 +23,8 @@ parks_data = [
     # {
     #     "pracownicy": "Eryk Gawron, Oskar Wróbel", "goscie": "Daniel", "pojazdy": "Volvo", "park": "Woliński_Park_Narodowy"
     # },
-    {
-        "pracownicy": "Anna Marciniak, Tomasz Zwoliński", "goscie": "Kamil", "pojazdy": "Tesla", "park": "Bieszczadzki_Park_Narodowy"
-    },
+    # {
+    #     "pracownicy": "Anna Marciniak, Tomasz Zwoliński", "goscie": "Kamil", "pojazdy": "Tesla", "park": "Bieszczadzki_Park_Narodowy"
+    # },
 
 ]

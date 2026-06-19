@@ -20,12 +20,6 @@ def show_users(data=None) -> None:
     listbox_lista_gosci.delete(0, END)
     listbox_lista_pojazdow.delete(0, END)
 
-    # for idx, user in enumerate(users):
-    #     listbox_lista_parkow.insert(idx, user.park)
-    #     listbox_lista_pracownikow.insert(idx, user.pracownicy)
-    #     listbox_lista_gosci.insert(idx, user.goscie)
-    #     listbox_lista_pojazdow.insert(idx, user.pojazdy)
-
     for idx, user in enumerate(visible_users):
         listbox_lista_parkow.insert(idx, user.park)
         listbox_lista_pracownikow.insert(idx, user.pracownicy)
@@ -42,11 +36,8 @@ def refresh_markers(data=None) -> None:
             user.marker = None
 
     for user in data:
-        user.marker = map_widget.set_marker(
-            user.coordinates[0],
-            user.coordinates[1],
-            text=user.park
-        )
+        create_marker(user)
+
 def filter_parks(event=None) -> None:
     text = entry_filtracja.get().strip().lower()
 
@@ -69,23 +60,10 @@ def remove_user() -> None:
 
     filter_parks()
 
-    # users[i].marker.delete()
-    # users.pop(i)
-    # show_users()
-
 
 def show_user_details():
     i = listbox_lista_parkow.index(ACTIVE)
     user = visible_users[i]
-    # pracownicy = users[i].pracownicy
-    # goscie = users[i].goscie
-    # pojazdy = users[i].pojazdy
-    # park = users[i].park
-
-    # label_pracownicy_szczegoly_parku_wartosc.config(text=pracownicy)
-    # label_goscie_szczegoly_parku_wartosc.config(text=goscie)
-    # label_pojazdy_szczegoly_parku_wartosc.config(text=pojazdy)
-    # label_park_szczegoly_parku_wartosc.config(text=park)
 
     label_pracownicy_szczegoly_parku_wartosc.config(text=user.pracownicy)
     label_goscie_szczegoly_parku_wartosc.config(text=user.goscie)
@@ -98,17 +76,6 @@ def show_user_details():
 
 def edit_user():
     i = listbox_lista_parkow.index(ACTIVE)
-    # pracownicy = users[i].pracownicy
-    # goscie = users[i].goscie
-    # pojazdy = users[i].pojazdy
-    # park = users[i].park
-    #
-    # entry_pracownicy.insert(0, pracownicy)
-    # entry_goscie.insert(0, goscie)
-    # entry_pojazdy.insert(0, pojazdy)
-    # entry_park.insert(0, park)
-    #
-    # button_dodaj_uzytkownika.config(text="Zapisz zmiany", command=lambda: update_user(i))
 
     user = visible_users[i]
 
@@ -119,20 +86,16 @@ def edit_user():
 
     button_dodaj_uzytkownika.config(text="Zapisz zmiany", command=lambda: update_user(user))
 
+def create_marker(user):
+    user.marker = map_widget.set_marker(
+        user.coordinates[0],
+        user.coordinates[1],
+        text=user.park,
+        command=lambda marker, selected_user=user: show_marker_details(marker, selected_user)
+    )
+
 def update_user(user):
-    # users[i].pracownicy = entry_pracownicy.get()
-    # users[i].goscie = entry_goscie.get()
-    # users[i].pojazdy = entry_pojazdy.get()
-    # users[i].park = entry_park.get()
-    # users[i].coordinates = User.get_coordinates(users[i])
-    # users[i].marker.delete()
-    # users[i].marker = map_widget.set_marker(users[i].coordinates[0], users[i].coordinates[1], text=users[i].park)
-    #
-    # button_dodaj_uzytkownika.config(text="Dodaj użytkownika", command=add_user)
-    # entry_pracownicy.delete(0, END)
-    # entry_goscie.delete(0, END)
-    # entry_pojazdy.delete(0, END)
-    # entry_park.delete(0, END)
+
     user.pracownicy = entry_pracownicy.get()
     user.goscie = entry_goscie.get()
     user.pojazdy = entry_pojazdy.get()
@@ -157,9 +120,10 @@ def add_user():
     park = entry_park.get()
 
     new_user = User(pracownicy=employees, goscie=guests, pojazdy=vehicles, park=park)
+    create_marker(new_user)
     users.append(new_user)
 
-    new_user.marker = map_widget.set_marker(new_user.coordinates[0], new_user.coordinates[1], text=new_user.park)
+    #new_user.marker = map_widget.set_marker(new_user.coordinates[0], new_user.coordinates[1], text=new_user.park)
 
     entry_pracownicy.delete(0, END)
     entry_goscie.delete(0, END)
@@ -168,6 +132,22 @@ def add_user():
 
     entry_pracownicy.focus()
     show_users()
+
+def reset_marker_texts():
+    for user in users:
+        if user.marker is not None:
+            user.marker.set_text(user.park)
+
+
+def show_marker_details(marker, user):
+    reset_marker_texts()
+
+    marker.set_text(
+        f"{user.park}\n"
+        f"Pracownicy: {user.pracownicy}\n"
+        f"Goście: {user.goscie}\n"
+        f"Pojazdy: {user.pojazdy}"
+    )
 
 if not login_window():
     sys.exit()
@@ -279,13 +259,10 @@ map_widget.set_position(52.2, 21.0)
 map_widget.grid(row=0, column=0)
 
 def add_user_object(user):
-    user.marker = map_widget.set_marker(
-        user.coordinates[0],
-        user.coordinates[1],
-        text=user.park
-    )
+    create_marker(user)
 
     users.append(user)
+
 
 for park_data in parks_data:
     add_user_object(
